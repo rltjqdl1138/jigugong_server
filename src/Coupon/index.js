@@ -8,8 +8,8 @@ const Coupon = require('../Database/coupon.js');
 const { RSA_PKCS1_OAEP_PADDING } = require('constants');
 
 // Temp modules
-const CLIENT_URL = 'http://192.168.1.40:3000'
-const SERVER_URL = 'http://192.168.1.40:4000'
+const CLIENT_URL = 'http://192.168.0.23:3000'
+const SERVER_URL = 'http://192.168.0.23:4000'
 //const coupons = require('./coupon.json')
 
 MANAGER_ID = '@earthy'
@@ -18,6 +18,8 @@ MANAGER_ID = '@earthy'
 const _ActivateCoupon = async (req, res)=>{
     const {number, userName} = req.body
     const activatedTime = String(Date.now())
+    console.log(number, userName)
+    console.log(req.decoded)
     
     if(!req.decoded || !req.decoded.id || req.decoded.id !== MANAGER_ID)
         return res.status(403).end()
@@ -58,7 +60,8 @@ const _UseCoupon = async (req, res)=>{
 const _RedirectUseCoupon = async(req, res)=>{
     try{
         const _coupon = await Coupon.SelectCoupon('number', req.decoded.number)
-        res.redirect(`${CLIENT_URL}/coupon?number=${_coupon[0].number}`)
+        if(!_coupon.length) throw Error('')
+        res.redirect(`${CLIENT_URL}/coupon?token=${req.token}`)
     }catch(e){
         res.redirect(`${CLIENT_URL}`)
     }
@@ -73,6 +76,7 @@ const _GetQRCode = (req, res)=>{
 
 const _CreateCoupon = async (req, res)=>{
     const {number, name, cost, shop} = req.body
+    console.log(number, name, cost, shop, req.decoded.id)
     if(!req.decoded || !req.decoded.id || req.decoded.id !== MANAGER_ID)
         return res.status(404).end()
     if(!number || !name || !cost || !shop)
@@ -80,10 +84,13 @@ const _CreateCoupon = async (req, res)=>{
 
     const coupon = await Coupon.SelectCoupon('number', number)
     const Shop = await Coupon.SelectShop('id', shop)
+    console.log(coupon)
+    console.log(Shop)
     if(!Shop)
         return res.status(404).end()
     else if(coupon.length)
         return res.status(403).send('Already Registered number')
+    console.log('register')
     await Coupon.InsertCoupon({number, name, cost, shop})
     res.status(200).end()
 }
@@ -156,6 +163,8 @@ router.get('/', async (req,res)=>{
         // Check Coupon
         if(req.query.number)
             return res.json( await _CheckCoupon(req.query.number) )
+        else if(req.decoded.number)
+            return res.json( await _CheckCoupon(req.decoded.number) )
         // List Coupons
         else if(req.decoded.id)
             return res.json( await _ListCoupons (req.decoded.id) )

@@ -39,9 +39,8 @@
 }
 .jigugong-logo-image{
     display:flex;
-    flex:2;
-    margin-left:5em;
-    margin-right:5em;
+    flex:3;
+    align-self: center;
 }
 .jigugong-logo-image > a > img{
     margin: auto;
@@ -68,10 +67,9 @@
 
 .jigugong-my-menu-container{
     display:flex;
-    flex: 3;
+    flex: 4;
     padding-left: 2em;
     padding-right: 2em;
-    padding-top:1em;
 }
 .jigugong-my-menu-container > div {
     flex:1;
@@ -82,9 +80,10 @@
     margin-right : 1em;
 }
 .jigugong-navigation{
-    flex:6;
+    flex:10;
     margin-top: 1em;
     margin-bottom: 1em;
+    overflow-y: scroll;
 }
 .jigugong-navigation > ul{
     margin-left: 2em;
@@ -93,9 +92,21 @@
 
 }
 .jigugong-navigation > ul > li{
-    font-size: 2.8em;
     padding: 8px;
 }
+.jigugong-navigation > ul > li > .title{
+    font-size: 2.8em;
+}
+.jigugong-navigation > ul > li > .subtitle{
+    display: block;
+    font-size: 2.4em;
+    padding-left: 1em;
+}
+#jigugong-sidebar-usage-open{ display:none }
+#jigugong-sidebar-story-open{ display:none }
+#jigugong-sidebar-shop-open{ display:none }
+#jigugong-sidebar-community-open{ display:none }
+
 .jigugong-information{
     flex:4;
     margin-left: 2em;

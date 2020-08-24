@@ -44,12 +44,12 @@ const SelectShop = async(key, value)=>{
     }
 }
 
-const InsertCoupon = async ({number, name, cost, shop, link})=>{
+const InsertCoupon = async ({number, name, cost, shop})=>{
     const coupon = await _ReadCoupon()
-    if( !number || !name || !cost || !shop || !link)
+    if( !number || !name || !cost || !shop)
         return false;
     const createTime = String(Date.now())
-    await _WriteCoupon( [...coupon, {state:0, number, name, cost, shop, createTime, link}])
+    await _WriteCoupon( [...coupon, {state:0, number, name, cost, shop, createTime}])
     return true
 }
 const InsertShop = async ({ id, name })=>{
