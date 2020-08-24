@@ -59,7 +59,7 @@
     display: flex;
     border-top: 2px solid gray;
     border-bottom: 2px solid gray;
-    font-size: 22;
+    font-size: 3em;
 }
 .jigugong-login-container > div > a{
     text-align: center;
@@ -93,7 +93,7 @@
 
 }
 .jigugong-navigation > ul > li{
-    font-size: 22;
+    font-size: 2.8em;
     padding: 8px;
 }
 .jigugong-information{
@@ -101,11 +101,11 @@
     margin-left: 2em;
 }
 .jigugong-information > h6{
-    font-size: 20;
+    font-size: 2em;
     font-weight: bold;
 }
 .jigugong-information > p{
-    font-size: 15;
+    font-size: 1.7em;
     padding-left: 10px;
 }
 .jigugong-bottom-padding{
