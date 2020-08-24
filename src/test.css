@@ -1,0 +1,91 @@
+*{
+    margin: 0px;
+    padding: 0px;
+    color: rgb(12,11,11);
+    text-decoration: none;
+}
+.jigugong-top-padding{
+    height: 4em;
+}
+.jigugong-sidebar{
+    display: flex;
+    border: 1px solid gray;
+    flex:1;
+    max-width: 400px;
+    height: 100%;
+    flex-direction: column;
+}
+.jigugong-logo-image{
+    display:flex;
+    flex:2;
+    margin-left:5em;
+    margin-right:5em;
+}
+.jigugong-logo-image > a > img{
+    margin: auto;
+    max-height: 100%;
+    max-width: 100%;
+}
+.jigugong-login-container{
+    display:flex;
+    flex:1.5;
+    margin-right: 2em;
+    margin-left: 2em;
+}
+.jigugong-login-container > div{
+    flex:1;
+    display: flex;
+    border-top: 2px solid gray;
+    border-bottom: 2px solid gray;
+    font-size: 22;
+}
+.jigugong-login-container > div > a{
+    text-align: center;
+    margin:auto;
+}
+
+.jigugong-my-menu-container{
+    display:flex;
+    flex: 3;
+    padding-left: 2em;
+    padding-right: 2em;
+    padding-top:1em;
+}
+.jigugong-my-menu-container > div {
+    flex:1;
+}
+.jigugong-banner{
+    flex: 1;
+    margin-left : 1em;
+    margin-right : 1em;
+}
+.jigugong-navigation{
+    flex:6;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+.jigugong-navigation > ul{
+    margin-left: 2em;
+    list-style: none;
+    padding-top: 1em;
+
+}
+.jigugong-navigation > ul > li{
+    font-size: 22;
+    padding: 8px;
+}
+.jigugong-information{
+    flex:4;
+    margin-left: 2em;
+}
+.jigugong-information > h6{
+    font-size: 20;
+    font-weight: bold;
+}
+.jigugong-information > p{
+    font-size: 15;
+    padding-left: 10px;
+}
+.jigugong-bottom-padding{
+    height:6em;
+}
