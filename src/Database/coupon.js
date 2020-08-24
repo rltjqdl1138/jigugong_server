@@ -30,7 +30,8 @@ const _WriteShop = (data) => new Promise((resolve, reject) => {
 
 const SelectCoupon = async(key, value)=>{
     const coupon = await _ReadCoupon()
-    return key && value ? coupon.reduce((result, e, index) => e[key] === value ? [...result, {...e, index}] : result, []) : coupon   
+    return key && value ?
+        coupon.reduce((result, e, index) => e[key] === value ? [...result, {...e, index}] : result, []) : coupon
 }
 const SelectShop = async(key, value)=>{
     const shop = await _ReadShop()

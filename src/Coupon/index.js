@@ -8,18 +8,14 @@ const Coupon = require('../Database/coupon.js');
 const { RSA_PKCS1_OAEP_PADDING } = require('constants');
 
 // Temp modules
-const CLIENT_URL = 'http://192.168.0.23:3000'
-const SERVER_URL = 'http://192.168.0.23:4000'
-//const coupons = require('./coupon.json')
-
-MANAGER_ID = '@earthy'
+const CLIENT_URL = 'http://192.168.1.40:3000'
+const SERVER_URL = 'http://192.168.1.40:4000'
+const MANAGER_ID = '@earthy'
 
 // POST /coupon/activate
 const _ActivateCoupon = async (req, res)=>{
     const {number, userName} = req.body
     const activatedTime = String(Date.now())
-    console.log(number, userName)
-    console.log(req.decoded)
     
     if(!req.decoded || !req.decoded.id || req.decoded.id !== MANAGER_ID)
         return res.status(403).end()
@@ -102,13 +98,16 @@ const _CheckCoupon= async (number)=>{
 }
 const _ListCoupons = async(id)=>{
     let coupons = []
-    if(id === MANAGER_ID)
+    if(id === MANAGER_ID){
         coupons = await Coupon.SelectCoupon()
+        await coupons.reduce( (prev, item, index) => prev.then( async()=>
+            coupons[index].link = `${SERVER_URL}/coupon/use?token=${(await jwt.code({number:item.number}))}`),
+        Promise.resolve())
+    }
     else
         // Extract { number, name, cost, usedTime } in already used coupons ( state === 2 )
         coupons = ( await Coupon.SelectCoupon('shop', id)).reduce((prev, e) => e.state !== 2 ? prev :
                     [...prev, {number: e.number, name: e.name, cost: e.cost, usedTime:e.usedTime}], [] )
-    
     return {data:coupons}
 }
 
@@ -167,7 +166,7 @@ router.get('/', async (req,res)=>{
             return res.json( await _CheckCoupon(req.decoded.number) )
         // List Coupons
         else if(req.decoded.id)
-            return res.json( await _ListCoupons (req.decoded.id) )
+            return res.json( await _ListCoupons (req.decoded.id, req.query.date) )
         throw Error('trouble')
     }catch(e){
         // Trouble Shooting

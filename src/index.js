@@ -21,4 +21,13 @@ router.get('/test.css', (req, res)=>{
         res.end();
     })
 })
+
+router.get('/image', (req, res)=>{
+    fs.readFile(`${__dirname}/coupon/coupon.png`, (err, data)=>{
+        if(err) return res.status(404).end()
+        res.writeHeader(200, {"Content-Type": "image/png"});  
+        res.write(data);  
+        res.end();
+    })
+})
 module.exports = router
