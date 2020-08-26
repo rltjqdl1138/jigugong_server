@@ -2,15 +2,22 @@
 const router = require('express').Router()
 const qr = require('qr-image');
 const fs = require('fs')
+
 // Earthy modules
 const jwt = require('../token')
 const Coupon = require('../Database/coupon.js');
-const { RSA_PKCS1_OAEP_PADDING } = require('constants');
 
 // Temp modules
-const CLIENT_URL = 'http://192.168.1.40:3000'
-const SERVER_URL = 'http://192.168.1.40:4000'
+const CLIENT_URL = 'http://3.34.178.42'
+const SERVER_URL = 'http://3.34.178.42:4000'
 const MANAGER_ID = '@earthy'
+
+const MS_SECOND = 1000
+const MS_MINUTE = MS_SECOND * 60
+const MS_HOUR = MS_MINUTE * 60
+const MS_DAY = MS_HOUR * 24
+const MS_WEEK = MS_DAY * 6
+const MS_MONTH = MS_DAY * 29
 
 // POST /coupon/activate
 const _ActivateCoupon = async (req, res)=>{
@@ -29,7 +36,6 @@ const _ActivateCoupon = async (req, res)=>{
     await Coupon.UpdateCoupon(number, {state: 1, userName, activatedTime})
     res.status(200).end()
 }
-
 // POST /coupon/use
 const _UseCoupon = async (req, res)=>{
     const usedTime = String(Date.now())
@@ -96,7 +102,17 @@ const _CheckCoupon= async (number)=>{
     const {state, name, cost, shop} = coupon
     return {number, state, name, cost, shop}
 }
-const _ListCoupons = async(id)=>{
+const _ListCoupons = async(id, date)=>{
+    const nowTime = new Date()
+    const OFFSET = nowTime.getHours()*MS_HOUR + nowTime.getMinutes()*MS_MINUTE + nowTime.getSeconds()*MS_SECOND + nowTime.getMilliseconds()
+
+    let pivot = parseInt(String(nowTime.getTime())) - OFFSET
+    switch(date){
+        case 'today':   break;
+        case 'week':    pivot = pivot - MS_WEEK; break;
+        case 'month':   pivot = pivot - MS_MONTH; break;
+        default:        pivot = 0;
+    }
     let coupons = []
     if(id === MANAGER_ID){
         coupons = await Coupon.SelectCoupon()
@@ -104,13 +120,23 @@ const _ListCoupons = async(id)=>{
             coupons[index].link = `${SERVER_URL}/coupon/use?token=${(await jwt.code({number:item.number}))}`),
         Promise.resolve())
     }
-    else
+    else{
+        coupons = await Coupon.SelectCoupon('shop', id)
+        
         // Extract { number, name, cost, usedTime } in already used coupons ( state === 2 )
-        coupons = ( await Coupon.SelectCoupon('shop', id)).reduce((prev, e) => e.state !== 2 ? prev :
-                    [...prev, {number: e.number, name: e.name, cost: e.cost, usedTime:e.usedTime}], [] )
-    return {data:coupons}
+        coupons = coupons.reduce((prev, e) => e.state !== 2 || (pivot && parseInt(e.usedTime)-pivot < 0 )? prev :
+            [...prev, {number: e.number, name: e.name, cost: e.cost, usedTime:e.usedTime}], [] )
+    }
+    return {data:coupons, pivot}
 }
-
+const _LoadSampleImage = (req, res)=>{
+    fs.readFile(`${__dirname}/coupon_sample.png`, (err, data)=>{
+        if(err) return res.status(404).end()
+        res.writeHeader(200, {"Content-Type": "image/png"});  
+        res.write(data);
+        res.end();
+    })   
+}
 
 
 //                  //
@@ -151,6 +177,7 @@ router.get('/shop', getShop)
 
 
 
+router.get('/image', _LoadSampleImage)
 router.get('/qrcode', _GetQRCode)
 router.use('/*', jwt.middleware)
 router.post('/activate', _ActivateCoupon)
