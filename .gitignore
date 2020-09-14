@@ -1,3 +1,6 @@
+# Security
+resource/security/
+
 # Logs
 logs
 *.log
