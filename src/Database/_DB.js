@@ -1,42 +1,62 @@
 const OrientDBClient = require("orientjs").OrientDBClient;
+const Key = require('../../resource/security/KeyOrientDB.json')
 
 // DB Configuration
-const DB_NAME = 'jigugong'
-const DB_USER = 'root'
-const DB_PASS = '1138877'
 const option = {
-    name: DB_NAME,
-    username:DB_USER,
-    password:DB_PASS
+    name: Key.db_name,
+    username: Key.db_user,
+    password: Key.db_password
 }
+
+/*
+ * @class   dbModel
+ * @brief   Parents class for OrientDB
+ * @author  jigugong Inc, Kim ki seop
+ * 
+ * @method  logWithTime
+ *     @brief   Write console log with time
+ *     @params  {String}    text - Log message
+ *     @return  No Return
+ * 
+ * @method  secondToString
+ *     @params  {Number}    time
+ *     @return  {String}    Converted time
+ * 
+ *     @description - convert <second> to <hour>:<minite>:<second>
+ *          @example    secondToString(3670) -> '01:01:10'
+ * 
+**/
 
 class dbModel{
     constructor(host="localhost", port=2424, usage='Basic'){
-        this.initializeDB(host, port, usage)
+        this._initializeDB(host, port, usage)
     }
-    initializeDB = async(host, port, usage)=>{
+    _initializeDB = async(host, port, usage)=>{
         try{
             this.db = await OrientDBClient.connect({host, port})
             this.dbSession = await this.db.session(option);
-            this.logWithTime(`[Database] Initialize success ${host}:${port} for \x1b[97m${usage}\x1b[0m`)
+            this.logWithTime(`[Database] Initialize Database for \x1b[97m${usage}\x1b[0m`)
         }
         catch(e){
             this.logWithTime('[Database] \x1b[31mInitialization Error\x1b[0m')
-            this.dbSession ? this.dbSession.close() : this.logWithTime(`DB Client is not created (NAME:${DB_NAME} USER:${DB_USER} PASSWORD:${DB_PASS})`)
-            this.db ? this.db.close() : this.logWithTime(`\x1b[31mDB Session is not created\x1b[0m (${host}:${port})`)
+            this.dbSession ? this.dbSession.close() : this.logWithTime(`[Database] \x1b[31mDB Client is not created\n\t* name:${option.name}\n\t* user:${option.username}\n\t* password:${option.password})`)
+            console.log('')
+            this.db ? this.db.close() : this.logWithTime(`[Database] \x1b[31mDB Session is not created\n\t* Session: ${host}:${port}\x1b[0m`)
+            console.log('')
         }
     }
+    _formating=(number) => `${number < 10 ? '0':''}${number}`
+
     logWithTime = (text)=>{
         const LogDate = new Date()
-        console.log(`\x1b[96m${LogDate.getFullYear()}.${this.formating(LogDate.getMonth()+1)}.${this.formating(LogDate.getDate())} ${this.formating(LogDate.getHours())}:${this.formating(LogDate.getMinutes())}:${this.formating(LogDate.getSeconds())}\x1b[0m ${text}`)
+        console.log(`\x1b[96m${LogDate.getFullYear()}.${this._formating(LogDate.getMonth()+1)}.${this._formating(LogDate.getDate())} ${this._formating(LogDate.getHours())}:${this._formating(LogDate.getMinutes())}:${this._formating(LogDate.getSeconds())}\x1b[0m ${text}`)
     }
     secondToString = (_time)=>{
         const rawtime = Math.floor(_time)
         const min = Math.floor(rawtime/60)
         const second = rawtime % 60
-        return `${this.formating(min)}:${this.formating(second)}`
+        return `${this._formating(min)}:${this._formating(second)}`
     }
-    formating=(number) => `${number < 10 ? '0':''}${number}`
 }
 
 module.exports = dbModel

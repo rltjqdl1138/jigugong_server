@@ -1,11 +1,47 @@
 const db = require('./_DB')
+
+/*
+ * @class   dbModel
+ * @brief   class for Access Account database
+ * @author  jigugong Inc, Kim ki seop
+ * 
+ * @method  createAccount
+ *     @brief   Create Account on Database, ( Not include duplication check )
+ *     @params  {Object}    payload
+ *         @property    {Object}    account
+ *             @property    {String}    id - ID
+ *             @property    {String}    password - (Only required original account)
+ *             @property    {String}    platform - 'original' or 'facebook' or 'google' or 'naver'
+ *         @property    {String}    name
+ *         @property    {String}    mobile
+ *         @property    {String}    nickname
+ *     @return  {Object}    account - Success
+ *     @return  {Object}    null    - Fail
+ *     
+ * @method  getAccount
+ *     @brief   Get Account information by ID and platform
+ *     @params  {Object}    account
+ *         @property    {String}    id
+ *         @property    {String}    platform
+ *     @return  {Object}    account - Success
+ *     @return  {Object}    null    - Fail
+ * 
+ * @method  duplicatedCheck
+ *     @params  {String}    key - Property of Account
+ *     @params  {Object}    value - Value for duplication Check ( key is "account" )
+ *         @property    {String}    id
+ *         @property    {String}    platform
+ *     @params  {String}    value - Value for duplication Check ( key isn't "account" )
+ *     @return  {Integer}    The number of data in database
+**/
+
+
 class AccountDB extends db{
     constructor(host, port, usage){ super(host, port, usage) }
     
     createAccount = async({account, name, mobile, nickname})=>{
         const {dbSession} = this
         const time = String(Date.now())
-
         const payload = {id:'', password:'', platform:'', name, mobile, nickname}
 
         payload.createdTime = time
@@ -20,12 +56,10 @@ class AccountDB extends db{
                     return null
                 else if(!account.password || typeof account.password !== 'string')
                     return null
-                // TODO: crypto password
-                const HashPassword = account.password
 
                 // Set Data
                 payload.id = account.id
-                payload.password = HashPassword
+                payload.password = account.password
                 break
             case 'naver':
                 return null
@@ -50,6 +84,12 @@ class AccountDB extends db{
             return;
         }
     }
+    getAccount = async({id, platform})=>{
+        const {dbSession} = this
+        const dbResult = await dbSession.query('SELECT * FROM Account WHERE id=:id and platform=:platform',{params:{id, platform}}).one()
+        return dbResult
+    }
+
     duplicatedCheck = async(key, value)=>{
         const {dbSession} = this
         let query = 'SELECT * FROM Account '
