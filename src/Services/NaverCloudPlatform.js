@@ -66,7 +66,7 @@ class MessageService {
     }
     //Authentication Table
     _keyTable = {}
-    _makeSignature = async (method, _timestamp, url)=>{
+    _createSignature = async (method, _timestamp, url)=>{
         const timestamp = typeof _timestamp === 'string' ? _timestamp : String(_timestamp)
         return crypto.createHmac('sha256', this.secretKey)
             .update(method).update(" ")
@@ -103,7 +103,7 @@ class MessageService {
         const context = `[지구공 본인확인] 인증번호는 ${key} 입니다. 정확히 입력해주세요`
 
         // Header / Body For Naver cloud platform
-        const signature = await this._makeSignature('POST', timestamp, this.url )
+        const signature = await this._createSignature('POST', timestamp, this.url )
         const header = {
             'Content-Type':'application/json',
             'x-ncp-apigw-timestamp':timestamp,
@@ -132,8 +132,6 @@ class MessageService {
             return false
         }
     }
-    
-
 }
 
 exports.MessageService = new MessageService()
