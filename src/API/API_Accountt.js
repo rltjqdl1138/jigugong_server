@@ -89,7 +89,7 @@ const duplicatedCheck = async(req, res)=>{
 
 const Signin = async(req, res)=>{
     const _parsedURL = req.path.split('/')
-    const platform = _parsedURL[2] ? _parseURL[2] : 'original'
+    const platform = _parsedURL[2] ? _parsedURL[2] : 'original'
     const {id, password} = req.body
     if(!platform || !id || (platform==='original' && !password))
         return res.status(400).end()

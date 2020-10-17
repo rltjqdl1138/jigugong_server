@@ -83,22 +83,23 @@ class ImportService{
         switch(true){
             case !customer_uid:
             case typeof customer_uid !== 'string':
-            
+
             case !card_number:
             case typeof card_number !== 'string':
             case card_number.length !== 19:
-            
+
             case !expiry:
             case typeof expiry !== 'string':
             case expiry.length !== 7:
-            
+
             case !birth:
             case typeof birth !== 'string':
             case birth.length !== 6:
 
             case !pwd_2digit:
-            case typeof pwd_2digit !== 2:
-                reject()
+            case typeof pwd_2digit !== 'string':
+            case pwd_2digit.length !== 2:
+                reject();
             default:
                 break;
         }

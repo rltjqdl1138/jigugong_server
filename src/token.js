@@ -48,11 +48,8 @@ const verifyToken = (token, type) =>
 const getMiddleware = (type, isAbort)=>{
     return async(req, res, next) =>{
         try{
-            console.log(type)
             const token = req.headers[getTokenType(type)] || req.query.token
-            console.log(token)
             const decoded = token ? await verifyToken(token, type) : null
-            console.log(decoded)
             req.token = token
             req.decoded = decoded
             isAbort && !token ? res.status(400).end() : next()
